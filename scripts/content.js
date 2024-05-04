@@ -46,6 +46,16 @@ function mouseOutHandler(e) {
     hoveredElement.classList.remove('element-picker-hovered');
 }
 
+function resizeCanvas(originalCanvas, width) {
+    var height = originalCanvas.height / (originalCanvas.width / width);
+    var resizedCanvas = document.createElement('canvas');
+    var ctx = resizedCanvas.getContext('2d');
+    resizedCanvas.width = width;
+    resizedCanvas.height = height;
+    ctx.drawImage(originalCanvas, 0, 0, width, height);
+    return resizedCanvas;
+}
+
 async function clickHandler(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -53,9 +63,17 @@ async function clickHandler(e) {
     hoveredElement.classList.remove('element-picker-hovered');
     source = hoveredElement.outerHTML;
     var canvas = await html2canvas(hoveredElement);
+    canvas = resizeCanvas(canvas, 512);
     var screenShot = canvas.toDataURL();
     await chrome.runtime.sendMessage({ action: 'element-picked', source, screenShot });
     showToast();
+}
+
+async function takeScreenshot() {
+    const canvas = html2canvas(document.body);
+    canvas = resizeCanvas(canvas, 512);
+    const screenshot =  canvas.toDataURL();
+    await chrome.runtime.sendMessage({ action: 'screenshot-taken', screenshot });
 }
 
 chrome.runtime.onMessage.addListener((request) => {
@@ -73,6 +91,8 @@ chrome.runtime.onMessage.addListener((request) => {
                 hoveredElement.classList.remove('element-picker-hovered');
             }
             break;
+        case 'take-screenshot':
+            takeScreenshot();
         default:
             break;
     }

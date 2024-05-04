@@ -1,10 +1,17 @@
+/// <reference path="../typings/chrome.d.ts" />
+//@ts-check
+
+import { FEATURE, MESSAGES, OPENAI_PROXY_BASE_URL, RESULT, STORAGE, ENDPOINTS } from "../constants.js";
+
 // Injects toast element
 const toast = document.createElement('div');
 toast.id = 'toast';
 toast.className = 'toast';
 document.body.appendChild(toast);
 
-function showToast(result, message) {
+
+
+export function showToast(result, message) {
     toast.textContent = message;
     toast.classList.add(result);
     toast.classList.add('show');
@@ -164,6 +171,7 @@ async function readStream(response, feature, language = '') {
                                                 codeBlock.className = `language-${language}`;
                                                 codeBlock.innerHTML += data;
                                                 codeBlock.removeAttribute('data-highlighted');
+                                                // @ts-ignore
                                                 hljs.highlightAll();
                                                 break;
                                         }
@@ -189,17 +197,18 @@ async function readStream(response, feature, language = '') {
  * Creates the stream and displays the data
  * @param {string} feature - Automated tests or Test Ideas
  */
-async function showResult(feature) {
+export async function showResult(feature) {
     let payload, data, URL;
     let language = '';
 
     switch (feature) {
         case FEATURE.GENERATE_TEST_IDEAS:
+            data = await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE, STORAGE.PAGE_SCREENSHOT, STORAGE.ELEMENT_SCREENSHOT]);
             URL = `${OPENAI_PROXY_BASE_URL}${ENDPOINTS.GENERATE_TEST_IDEAS}`;
             payload = {
-                sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[
-                    STORAGE.ELEMENT_SOURCE
-                ],
+                sourceCode: data[STORAGE.ELEMENT_SOURCE],
+                pageScreenshot: data[STORAGE.PAGE_SCREENSHOT],
+                elementScreenshot: data[STORAGE.ELEMENT_SCREENSHOT]
             };
             break;
         case FEATURE.CHECK_ACCESSIBILITY:

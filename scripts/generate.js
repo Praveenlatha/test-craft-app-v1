@@ -7,9 +7,11 @@ function updateControls(message) {
     checkAccessibilityBtn.disabled = true;
 };
 
-generateTestIdeasBtn.addEventListener('click', () => {
+generateTestIdeasBtn.addEventListener('click', async () => {
     updateControls(MESSAGES.GENERATING_TEST_IDEAS);
-    displayResultInNewWindow(chrome.runtime.getURL('pages/generatedIdeas.html'));
+    await chrome.sidePanel.setOptions({ path: generateIdeas });
+    // await chrome.runtime.sendMessage({ action: 'generate-ideas'});
+    // displayResultInNewWindow(chrome.runtime.getURL('pages/generatedIdeas.html'));
 });
 
 automateBtn.addEventListener('click', () => {

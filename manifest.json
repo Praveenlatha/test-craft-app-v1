@@ -3,34 +3,27 @@
     "name": "TestCraft - Dev",
     "version": "1.1.2",
     "description": "TestCraft - GPT-Powered Test Idea Generator & Automated Test Creator",
-    "permissions": [
-        "activeTab",
-        "storage"
-    ],
+    "permissions": ["activeTab", "storage", "sidePanel"],
     "action": {
         "default_popup": "popup/popup.html"
     },
     "background": {
         "service_worker": "scripts/service.js",
         "type": "module"
-      },
+    },
     "content_scripts": [
         {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "scripts/content.js",
-                "deps/html2canvas/index.js"
-            ],
-            "css": [
-                "styles/styles.css"
-            ]
+            "matches": ["<all_urls>"],
+            "js": ["scripts/content.js", "deps/html2canvas/index.js"],
+            "css": ["styles/styles.css"]
         }
     ],
     "icons": {
         "24": "images/icon24.png",
         "48": "images/icon48.png",
         "128": "images/icon128.png"
+    },
+    "side_panel": {
+        "default_path": "sidepanel/index.html"
     }
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="index.js" type="module" defer></script>
+</head>
+
+<body>
+    <header>
+        <button id="settings-button">
+            <img src="../images/icons8-settings-100.png" alt="Settings" id="settings-image">
+        </button>
+        <h1>TestCraft</h1>
+    </header>
+
+    <div id="settings-content" style="display: none;" class="toggles">
+        <div id="framework" class="toggle">
+        </div>
+        <div id="programming-language" class="toggle">
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div id="main-controls">
+            <button id="start-picking">
+                <span>Pick Element</span>
+            </button>
+            <div id="screenshot-container" style="display: none;">
+                <img id="screenshot-image" alt="Screenshot" width="100%">
+            </div>
+            <button id="generate-test-ideas" disabled>
+                <span>Generate Test Ideas</span>
+            </button>
+            <button id="check-accessibility" disabled>
+                <span>Check Accessibility</span>
+            </button>
+            <button id="generate-tests" disabled>
+                <span>Automate</span>
+            </button>
+            <button id="notes">
+                <span>Notes</span>
+            </button>
+        </div>
+        <div id="status" style="display:none;"></div>
+    </div>
+
+</body>
+
+</html>
