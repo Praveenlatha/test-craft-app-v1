@@ -38,16 +38,15 @@ h1 {
     width: min-content;
 }
 
-/* Style for the image inside the button */
 #settings-button img {
-    height: 24px; /* Adjust as needed */
-    width: auto; /* Maintain aspect ratio */
+    height: 24px;
+    width: auto;
     filter: grayscale(100%) brightness(70%);
 }
 
 #settings-button:hover img {
-    height: 24px; /* Adjust as needed */
-    width: auto; /* Maintain aspect ratio */
+    height: 24px;
+    width: auto;
     filter: grayscale(100%) brightness(100%);
 }
 
@@ -87,14 +86,14 @@ button:disabled {
     padding-top: 0.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Align children (sections) centrally */
-    width: 100%; /* Adjust as needed */
+    align-items: center;
+    width: 100%;
 }
 
 .toggles {
     display: flex;
-    justify-content: center; /* Center buttons within the toggle */
-    width: 100%; /* Take full width of the section */
+    justify-content: center;
+    width: 100%;
     align-items: center;
     margin: auto;
 }
@@ -145,7 +144,8 @@ button:disabled {
     margin-top: 4% !important;
 }
 
-#status {
+#status,
+#optional-settings-status {
     color: #FFFFFF;
     text-align: center;
     font-weight: bold;
@@ -154,6 +154,65 @@ button:disabled {
 .ellipsis {
     display: inline-block;
     animation: ellipsis 1.5s steps(3, end) infinite;
+}
+
+#screenshot-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 9rem;
+}
+
+#screenshot-image {
+    display: block;
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+}
+
+#optional-settings {
+    margin: 5% auto;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#optional-settings input {
+    color: #1C2430;
+    background-color: #3F4A5E;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+    transition: border-color 0.3s ease;
+    margin: 3px;
+    padding: 0.6rem 0.6rem;
+}
+
+#optional-settings input:disabled {
+    background-color: #3F4A5E;
+    color: #878787;
+}
+
+#optional-settings input:focus {
+    border-color: #FFFFFF;
+    outline: none;
+    color: #FFFFFF;
+    background-color: #1C2430;
+}
+
+#optional-settings input:hover {
+    color: #FFFFFF;
+}
+
+#optional-settings input::placeholder {
+    color: #1C2430;
+    font-weight: 600;
+    text-align: center;
 }
 
 @keyframes ellipsis {

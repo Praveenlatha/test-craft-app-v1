@@ -21,7 +21,7 @@
             <button id="start-picking">
                 <span>Pick Element</span>
             </button>
-            <div id="screenshot-container" style="display: none;">
+            <div id="screenshot-container">
                 <img id="screenshot-image" alt="Screenshot" width="100%">
               </div>
             <button id="generate-test-ideas" disabled>
@@ -41,6 +41,11 @@
         <div id="framework" class="toggle">
         </div>
         <div id="programming-language" class="toggle">
+        </div>
+        <div id="optional-settings">
+            <input type="password" id="openai-api-key" placeholder="Your OpenAI API KEY">
+            <input type="text" id="custom-server-url" placeholder="Your custom server URL">
+            <div id="optional-settings-status" style="display: none;"></div>
         </div>
     </div>
 

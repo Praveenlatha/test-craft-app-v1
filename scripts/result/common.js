@@ -190,12 +190,17 @@ async function readStream(response, feature, language = '') {
  * @param {string} feature - Automated tests or Test Ideas
  */
 async function showResult(feature) {
-    let payload, data, URL;
+    const openAiApiKey = await chrome.storage.local.get([STORAGE.OPENAI_API_KEY]);
+    const customServerUrl = await chrome.storage.local.get([STORAGE.OPENAI_API_KEY]);
+
+    let payload, data;
     let language = '';
+    let URL = customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
 
     switch (feature) {
         case FEATURE.GENERATE_TEST_IDEAS:
-            URL = `${OPENAI_PROXY_BASE_URL}${ENDPOINTS.GENERATE_TEST_IDEAS}`;
+            URL 
+            URL += ENDPOINTS.GENERATE_TEST_IDEAS;
             payload = {
                 sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[
                     STORAGE.ELEMENT_SOURCE
@@ -203,7 +208,7 @@ async function showResult(feature) {
             };
             break;
         case FEATURE.CHECK_ACCESSIBILITY:
-            URL = `${OPENAI_PROXY_BASE_URL}${ENDPOINTS.CHECK_ACCESSIBILITY}`;
+            URL = ENDPOINTS.CHECK_ACCESSIBILITY;
             payload = {
                 sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[
                     STORAGE.ELEMENT_SOURCE
@@ -212,7 +217,7 @@ async function showResult(feature) {
             chrome.storage.local.remove([STORAGE.ELEMENT_PICKED]);
             break;
         case FEATURE.AUTOMATE_TESTS:
-            URL = `${OPENAI_PROXY_BASE_URL}${ENDPOINTS.AUTOMATE_TESTS}`;
+            URL += ENDPOINTS.AUTOMATE_TESTS;
             data = await chrome.storage.local.get([
                 STORAGE.ELEMENT_SOURCE,
                 STORAGE.FRAMEWORK_SELECTED,
@@ -231,7 +236,7 @@ async function showResult(feature) {
             chrome.storage.local.remove([STORAGE.ELEMENT_PICKED, STORAGE.AUTOMATED_TESTS]);
             break;
         case FEATURE.AUTOMATE_IDEAS:
-            URL = `${OPENAI_PROXY_BASE_URL}${ENDPOINTS.AUTOMATE_IDEAS}`;
+            URL += ENDPOINTS.AUTOMATE_IDEAS;
             data = await chrome.storage.local.get([
                 STORAGE.ELEMENT_SOURCE,
                 STORAGE.FRAMEWORK_SELECTED,
@@ -250,6 +255,10 @@ async function showResult(feature) {
             };
             language = payload.language;
             break;
+    }
+
+    if(openAiApiKey) {
+        payload['openAiApiKey'] = openAiApiKey;
     }
 
     const options = await buildRequest(payload);

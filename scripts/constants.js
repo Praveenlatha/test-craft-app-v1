@@ -2,15 +2,17 @@
 const OPENAI_PROXY_BASE_URL = 'http://127.0.0.1:5000';
 const STORAGE = {
     AUTOMATED_TESTS: 'automated-tests',
+    CUSTOM_SERVER_URL: 'custom-server-url',
     ELEMENT_PICKED: 'element-picked',
     ELEMENT_SCREENSHOT: 'element-screenshot',
     ELEMENT_SOURCE: 'selected-element',
     FRAMEWORK_SELECTED: 'selected-framework',
     IDEAS: 'ideas',
     LANGUAGE_SELECTED: 'selected-language',
+    OPENAI_API_KEY: 'openai-api-key',
     POM: 'pom',
     SITE_URL: 'site-url',
-    TEST_IDEAS: 'test-ideas',
+    TEST_IDEAS: 'test-ideas'
 };
 
 const LANGUAGE = {

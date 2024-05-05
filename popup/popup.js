@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if(data[STORAGE.ELEMENT_SCREENSHOT]) {
                 debugger;
                 screenShotImage.src = data[STORAGE.ELEMENT_SCREENSHOT];
-                screenshotContainer.style.display = 'block';
             }
         });
     });

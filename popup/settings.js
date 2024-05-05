@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const settingsButton = document.getElementById('settings-button');
     const settingsContent = document.getElementById('settings-content');
     const settingsImage = document.getElementById('settings-image');
+    const apiKeyInput = document.getElementById('openai-api-key');
+    const serverUrlInput = document.getElementById('custom-server-url');
+    const statusElement = document.getElementById('optional-settings-status');
 
     function markOptionSelected(id, type) {
         let ids;
@@ -118,7 +121,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     chrome.storage.local.get(
-        [STORAGE.LANGUAGE_SELECTED, STORAGE.FRAMEWORK_SELECTED, STORAGE.POM],
+        [
+            STORAGE.LANGUAGE_SELECTED,
+            STORAGE.FRAMEWORK_SELECTED,
+            STORAGE.POM,
+            STORAGE.CUSTOM_SERVER_URL,
+            STORAGE.OPENAI_API_KEY,
+        ],
         (data) => {
             console.log(data[STORAGE.FRAMEWORK_SELECTED]);
             let framework = data[STORAGE.FRAMEWORK_SELECTED]
@@ -132,6 +141,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 : LANGUAGE.JAVASCRIPT.id;
             console.log(language);
             markOptionSelected(language, 'language');
+
+            if (data[STORAGE.OPENAI_API_KEY]) {
+                apiKeyInput.value = data[STORAGE.OPENAI_API_KEY];
+            }
+
+            if (data[STORAGE.CUSTOM_SERVER_URL]) {
+                serverUrlInput.value = data[STORAGE.CUSTOM_SERVER_URL];
+            } else {
+                statusElement.innerText = '';
+                statusElement.style.display = 'none';
+            }
         },
     );
+
+    apiKeyInput.addEventListener('input', () => {
+        chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
+    });
+
+    serverUrlInput.addEventListener('input', () => {
+        const serverUrl = serverUrlInput.value.trim();
+
+        try {
+            const urlObject = new URL(serverUrl);
+
+            // Remove trailing slash if present
+            const modifiedUrl = urlObject.href.replace(/\/$/, '');
+            serverUrlInput.value = modifiedUrl;
+            chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
+            statusElement.innerText = '';
+            statusElement.style.display = 'none';
+        } catch (error) {
+            if (!serverUrl) {
+                statusElement.innerText = '';
+                statusElement.style.display = 'none';
+            } else {
+                statusElement.innerText = 'Invalid URL';
+                statusElement.style.display = 'block';
+            }
+        }
+    });
 });
