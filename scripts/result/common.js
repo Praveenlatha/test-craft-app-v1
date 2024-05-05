@@ -190,10 +190,11 @@ async function readStream(response, feature, language = '') {
  * @param {string} feature - Automated tests or Test Ideas
  */
 async function showResult(feature) {
-    const openAiApiKey = await chrome.storage.local.get([STORAGE.OPENAI_API_KEY]);
-    const customServerUrl = await chrome.storage.local.get([STORAGE.OPENAI_API_KEY]);
+    let data = await chrome.storage.local.get([STORAGE.OPENAI_API_KEY, STORAGE.CUSTOM_SERVER_URL]);
+    const openAiApiKey = data[STORAGE.OPENAI_API_KEY];
+    const customServerUrl = data[STORAGE.CUSTOM_SERVER_URL];
 
-    let payload, data;
+    let payload;
     let language = '';
     let URL = customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
 
@@ -257,7 +258,7 @@ async function showResult(feature) {
             break;
     }
 
-    if(openAiApiKey) {
+    if(!!openAiApiKey) {
         payload['openAiApiKey'] = openAiApiKey;
     }
 

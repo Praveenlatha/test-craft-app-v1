@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
             [FRAMEWORK.SELENIUM]: [1, 1, 1, 1, 1],
         };
         const languages = Object.values(LANGUAGE).map((lang) => lang.id);
-        console.log(languages);
         const enabled = options[framework];
 
         for (let index = 0; index < languages.length; index++) {
@@ -129,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
             STORAGE.OPENAI_API_KEY,
         ],
         (data) => {
-            console.log(data[STORAGE.FRAMEWORK_SELECTED]);
             let framework = data[STORAGE.FRAMEWORK_SELECTED]
                 ? data[STORAGE.FRAMEWORK_SELECTED]
                 : FRAMEWORK.PLAYWRIGHT;
@@ -139,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
             let language = data[STORAGE.LANGUAGE_SELECTED]
                 ? data[STORAGE.LANGUAGE_SELECTED]
                 : LANGUAGE.JAVASCRIPT.id;
-            console.log(language);
             markOptionSelected(language, 'language');
 
             if (data[STORAGE.OPENAI_API_KEY]) {
@@ -175,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!serverUrl) {
                 statusElement.innerText = '';
                 statusElement.style.display = 'none';
+                chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: null });
             } else {
                 statusElement.innerText = 'Invalid URL';
                 statusElement.style.display = 'block';
