@@ -1,4 +1,4 @@
-const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-rtu664353a-uc.a.run.app'
+const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-dev-rtu664353a-uc.a.run.app';
 
 const STORAGE = {
     AUTOMATED_TESTS: 'automated-tests',
@@ -12,7 +12,7 @@ const STORAGE = {
     OPENAI_API_KEY: 'openai-api-key',
     POM: 'pom',
     SITE_URL: 'site-url',
-    TEST_IDEAS: 'test-ideas'
+    TEST_IDEAS: 'test-ideas',
 };
 
 const LANGUAGE = {

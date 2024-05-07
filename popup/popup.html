@@ -17,7 +17,6 @@
 
     <div id="main-content">
         <div id="main-controls">
-
             <button id="start-picking">
                 <span>Pick Element</span>
             </button>
@@ -27,23 +26,25 @@
             <button id="generate-test-ideas" disabled>
                 <span>Generate Test Ideas</span>
             </button>
-            <button id="check-accessibility" disabled>
-                <span>Check Accessibility</span>
-            </button>
             <button id="generate-tests" disabled>
                 <span>Automate</span>
+            </button>
+            <button id="check-accessibility" disabled>
+                <span>Check Accessibility</span>
             </button>
         </div>
         <div id="status" style="display:none;"></div>
     </div>
 
     <div id="settings-content" style="display: none;" class="toggles">
+        <h3>Automation Settings</h3>
         <div id="framework" class="toggle">
         </div>
         <div id="programming-language" class="toggle">
         </div>
+        <h3>API Settings</h3>
         <div id="optional-settings">
-            <input type="password" id="openai-api-key" placeholder="Your OpenAI API KEY" title="Your OpenAI API KEY">
+            <input type="password" id="openai-api-key" placeholder="Your OpenAI API key" title="Your OpenAI API key">
             <input type="text" id="custom-server-url" placeholder="Your custom server URL" title="Your custom server URL">
             <div id="optional-settings-status" style="display: none;"></div>
         </div>
