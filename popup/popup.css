@@ -185,7 +185,8 @@ h3 {
     flex-direction: column;
 }
 
-#optional-settings input {
+#optional-settings input,
+#openai-models {
     color: #1C2430;
     background-color: #3F4A5E;
     border: 1px solid transparent;
@@ -197,6 +198,12 @@ h3 {
     transition: border-color 0.3s ease;
     margin: 3px;
     padding: 0.6rem 0.6rem;
+}
+
+#openai-models {
+    text-align: center;
+    text-align-last: center;
+    -moz-text-align-last: center;
 }
 
 #optional-settings input:disabled {

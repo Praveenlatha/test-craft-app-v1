@@ -1,4 +1,4 @@
-const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-dev-rtu664353a-uc.a.run.app';
+const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-rtu664353a-uc.a.run.app'
 
 const STORAGE = {
     AUTOMATED_TESTS: 'automated-tests',
@@ -10,6 +10,7 @@ const STORAGE = {
     IDEAS: 'ideas',
     LANGUAGE_SELECTED: 'selected-language',
     OPENAI_API_KEY: 'openai-api-key',
+    OPENAI_MODEL: 'openai-model',
     POM: 'pom',
     SITE_URL: 'site-url',
     TEST_IDEAS: 'test-ideas',
@@ -46,6 +47,7 @@ const MESSAGES = {
     GENERATING_TESTS: 'Generating Tests<span class="ellipsis">...</span>',
     SUCCESS: 'Success!',
     TOO_LARGE: 'The element selected is too large, please try again with a smaller element.',
+    INVALID_API_KEY: 'Incorrect API key provided'
 };
 
 const RESULT = {
@@ -59,6 +61,7 @@ const ENDPOINTS = {
     CHECK_ACCESSIBILITY: '/api/check-accessibility',
     GENERATE_TEST_IDEAS: '/api/generate-ideas',
     PING: '/api/ping',
+    MODELS: '/api/models'
 };
 
 const FEATURE = {

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async () => {
     const languageContainer = document.getElementById('programming-language');
     const frameworkContainer = document.getElementById('framework');
     const mainContent = document.getElementById('main-content');
@@ -7,7 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const settingsImage = document.getElementById('settings-image');
     const apiKeyInput = document.getElementById('openai-api-key');
     const serverUrlInput = document.getElementById('custom-server-url');
+    const openaiModelSelect = document.getElementById('openai-models');
     const statusElement = document.getElementById('optional-settings-status');
+
+    const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
 
     function markOptionSelected(id, type) {
         let ids;
@@ -34,32 +37,20 @@ document.addEventListener('DOMContentLoaded', function () {
         markOptionSelected(language, 'language');
     }
 
-    Object.values(FRAMEWORK).forEach(function (framework) {
-        let button = document.createElement('button');
-        button.classList.add('disabled');
-        button.id = framework;
-        button.textContent = framework;
-        frameworkContainer.appendChild(button);
-
-        document.getElementById(framework).addEventListener('click', function () {
-            chrome.storage.local.set({ [STORAGE.FRAMEWORK_SELECTED]: this.id });
-            markOptionSelected(this.id, 'framework');
-            updateLanguageOptions(framework);
-        });
-    });
-
-    Object.values(LANGUAGE).forEach(function (language) {
-        let button = document.createElement('button');
-        button.classList.add('disabled');
-        button.classList.add('available');
-        button.id = language.id;
-        button.textContent = language.label;
-        languageContainer.appendChild(button);
-
-        document.getElementById(language.id).addEventListener('click', function () {
-            selectAndSaveLanguage(this.id);
-        });
-    });
+    async function getModels() {
+        const customServerUrl = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL])[
+            STORAGE.CUSTOM_SERVER_URL
+        ];
+        const BASE_URL = !!customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
+        const models = await fetch(`${BASE_URL}${ENDPOINTS.MODELS}`);
+        if (models.status === 200) {
+            return models.json();
+        } else {
+            statusElement.innerText = 'Could not fetch available models';
+            statusElement.style.display = 'block';
+            return [];
+        }
+    }
 
     function updateLanguageOptions(framework) {
         /**
@@ -107,6 +98,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    Object.values(FRAMEWORK).forEach(function (framework) {
+        let button = document.createElement('button');
+        button.classList.add('disabled');
+        button.id = framework;
+        button.textContent = framework;
+        frameworkContainer.appendChild(button);
+
+        document.getElementById(framework).addEventListener('click', function () {
+            chrome.storage.local.set({ [STORAGE.FRAMEWORK_SELECTED]: this.id });
+            markOptionSelected(this.id, 'framework');
+            updateLanguageOptions(framework);
+        });
+    });
+
+    Object.values(LANGUAGE).forEach(function (language) {
+        let button = document.createElement('button');
+        button.classList.add('disabled');
+        button.classList.add('available');
+        button.id = language.id;
+        button.textContent = language.label;
+        languageContainer.appendChild(button);
+
+        document.getElementById(language.id).addEventListener('click', function () {
+            selectAndSaveLanguage(this.id);
+        });
+    });
+
+    const models = await getModels();
+    models.forEach((model, key) => {
+        openaiModelSelect[key] = new Option(model.id, key);
+    });
+
     settingsButton.addEventListener('click', function () {
         if (settingsImage.src.includes('icons8-settings-100.png')) {
             settingsImage.src = '../images/icons8-back-100.png';
@@ -126,6 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
             STORAGE.POM,
             STORAGE.CUSTOM_SERVER_URL,
             STORAGE.OPENAI_API_KEY,
+            STORAGE.OPENAI_MODEL,
         ],
         (data) => {
             let framework = data[STORAGE.FRAMEWORK_SELECTED]
@@ -139,8 +163,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 : LANGUAGE.JAVASCRIPT.id;
             markOptionSelected(language, 'language');
 
-            if (data[STORAGE.OPENAI_API_KEY]) {
+            if (!!data[STORAGE.OPENAI_API_KEY]) {
                 apiKeyInput.value = data[STORAGE.OPENAI_API_KEY];
+                openaiModelSelect.disabled = false;
+                if (!!data[STORAGE.OPENAI_MODEL]) {
+                    for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                        if (openaiModelSelect.options[i].text === data[STORAGE.OPENAI_MODEL]) {
+                            openaiModelSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                        if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
+                            openaiModelSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                    if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
+                        openaiModelSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                openaiModelSelect.disabled = true;
             }
 
             if (data[STORAGE.CUSTOM_SERVER_URL]) {
@@ -178,5 +226,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 statusElement.style.display = 'block';
             }
         }
+    });
+
+    openaiModelSelect.addEventListener('change', function () {
+        chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: this.text });
     });
 });

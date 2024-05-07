@@ -196,11 +196,10 @@ async function showResult(feature) {
 
     let payload;
     let language = '';
-    let URL = customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
+    let URL = !!customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
 
     switch (feature) {
         case FEATURE.GENERATE_TEST_IDEAS:
-            URL 
             URL += ENDPOINTS.GENERATE_TEST_IDEAS;
             payload = {
                 sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[
@@ -266,7 +265,10 @@ async function showResult(feature) {
 
     fetch(URL, options)
         .then((response) => {
-            if (response.status === 413) {
+            if(response.status === 401) {
+                chrome.runtime.sendMessage({ source: 'stream', status: 'error', message: 'INVALID_API_KEY' });
+                showToast(RESULT.ERROR, MESSAGES.INVALID_API_KEY);
+            } else if (response.status === 413) {
                 chrome.runtime.sendMessage({ source: 'stream', status: 'error' });
                 showToast(RESULT.ERROR, MESSAGES.TOO_LARGE);
             } else if (!response.ok) {

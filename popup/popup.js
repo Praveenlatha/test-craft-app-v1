@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ];
     const BASE_URL = !!customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
 
+    //TODO: try catch
     fetch(`${BASE_URL}${ENDPOINTS.PING}`).then((res) => {
         if (res.status !== 200) {
             statusDescription.textContent = MESSAGES.FAILED;
@@ -67,6 +68,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         statusDescription.textContent = MESSAGES.SUCCESS;
     } else if (request.source === 'stream' && request.status == 'error') {
         pickerBtn.disabled = false;
-        statusDescription.textContent = MESSAGES.FAILED;
+        console.log(request.message)
+        console.log(MESSAGES[request.message])
+        if (!!request.message) {
+            statusDescription.textContent = MESSAGES[request.message];
+        } else {
+            statusDescription.textContent = MESSAGES.FAILED;
+        }
     }
 });
