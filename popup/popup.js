@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const customServerUrl = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL])[
-        STORAGE.CUSTOM_SERVER_URL
-    ];
+    const customServerUrl = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL])
     const BASE_URL = !!customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
 
     //TODO: try catch

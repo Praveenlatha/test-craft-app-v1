@@ -200,11 +200,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
     );
 
-    apiKeyInput.addEventListener('input', () => {
+    apiKeyInput.addEventListener('change', () => {
         chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
     });
 
-    serverUrlInput.addEventListener('input', () => {
+    serverUrlInput.addEventListener('change', () => {
         const serverUrl = serverUrlInput.value.trim();
 
         try {
