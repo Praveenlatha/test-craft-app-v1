@@ -13,7 +13,10 @@ html * {
 body {
     background-color: #1C2430;
     margin: 0;
-    padding: 15px;
+    /* padding: 15px; */
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
     width: 300px;
     border-radius: 10%;
 }
@@ -80,6 +83,7 @@ h3 {
     filter: grayscale(100%) brightness(80%);
 }
 
+#main-content,
 #settings-content {
     margin: 5% auto;
 }
@@ -116,7 +120,7 @@ h3 {
 
 .toggles button.disabled,
 .toggle {
-    background-color: #3F4A5E;
+    background-color: #5b6a85;
     color: #1C2430;
     border-radius: 0.5em;
     cursor: pointer;
@@ -156,6 +160,7 @@ h3 {
     color: #FFFFFF;
     text-align: center;
     font-weight: bold;
+    height: 15px;
 }
 
 .ellipsis {
@@ -188,7 +193,7 @@ h3 {
 #optional-settings input,
 #openai-models {
     color: #1C2430;
-    background-color: #3F4A5E;
+    background-color: #8fa3c5;
     border: 1px solid transparent;
     border-radius: 4px;
     margin-bottom: 10px;
@@ -201,13 +206,14 @@ h3 {
 }
 
 #openai-models {
-    text-align: center;
+    text-align: justify;
     text-align-last: center;
     -moz-text-align-last: center;
+    margin-bottom: 10px;
 }
 
 #optional-settings input:disabled {
-    background-color: #3F4A5E;
+    background-color: #5b6a85;
     color: #878787;
 }
 
@@ -225,7 +231,7 @@ h3 {
 #optional-settings input::placeholder {
     color: #1C2430;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
 }
 
 @keyframes ellipsis {

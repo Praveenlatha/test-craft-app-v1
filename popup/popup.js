@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const customServerUrl = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL])
+    const customServerUrl = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL]);
     const BASE_URL = !!customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
 
     //TODO: try catch
     fetch(`${BASE_URL}${ENDPOINTS.PING}`).then((res) => {
         if (res.status !== 200) {
             statusDescription.textContent = MESSAGES.FAILED;
-            statusDescription.style.display = 'block';
         }
     });
 
@@ -63,11 +62,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.source === 'stream' && request.status == 'finished') {
         pickerBtn.disabled = false;
+        automateBtn.disabled = false;
+        generateTestIdeasBtn.disabled = false;
+        checkAccessibilityBtn.disabled = false;
         statusDescription.textContent = MESSAGES.SUCCESS;
     } else if (request.source === 'stream' && request.status == 'error') {
         pickerBtn.disabled = false;
-        console.log(request.message)
-        console.log(MESSAGES[request.message])
         if (!!request.message) {
             statusDescription.textContent = MESSAGES[request.message];
         } else {

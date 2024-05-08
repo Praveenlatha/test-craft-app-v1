@@ -190,8 +190,13 @@ async function readStream(response, feature, language = '') {
  * @param {string} feature - Automated tests or Test Ideas
  */
 async function showResult(feature) {
-    let data = await chrome.storage.local.get([STORAGE.OPENAI_API_KEY, STORAGE.CUSTOM_SERVER_URL]);
+    let data = await chrome.storage.local.get([
+        STORAGE.OPENAI_API_KEY,
+        STORAGE.OPENAI_MODEL,
+        STORAGE.CUSTOM_SERVER_URL,
+    ]);
     const openAiApiKey = data[STORAGE.OPENAI_API_KEY];
+    const model = data[STORAGE.OPENAI_MODEL];
     const customServerUrl = data[STORAGE.CUSTOM_SERVER_URL];
 
     let payload;
@@ -257,16 +262,24 @@ async function showResult(feature) {
             break;
     }
 
-    if(!!openAiApiKey) {
+    if (!!openAiApiKey) {
         payload['openAiApiKey'] = openAiApiKey;
+    }
+
+    if (!!model) {
+        payload['model'] = model;
     }
 
     const options = await buildRequest(payload);
 
     fetch(URL, options)
         .then((response) => {
-            if(response.status === 401) {
-                chrome.runtime.sendMessage({ source: 'stream', status: 'error', message: 'INVALID_API_KEY' });
+            if (response.status === 401) {
+                chrome.runtime.sendMessage({
+                    source: 'stream',
+                    status: 'error',
+                    message: 'INVALID_API_KEY',
+                });
                 showToast(RESULT.ERROR, MESSAGES.INVALID_API_KEY);
             } else if (response.status === 413) {
                 chrome.runtime.sendMessage({ source: 'stream', status: 'error' });

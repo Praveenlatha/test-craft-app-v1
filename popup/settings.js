@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const openaiModelSelect = document.getElementById('openai-models');
     const statusElement = document.getElementById('optional-settings-status');
 
-    const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
+    const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo-0125';
 
     function markOptionSelected(id, type) {
         let ids;
@@ -38,16 +38,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function getModels() {
-        const customServerUrl = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL])[
-            STORAGE.CUSTOM_SERVER_URL
-        ];
+        const storageData = await chrome.storage.local.get([
+            STORAGE.CUSTOM_SERVER_URL,
+            STORAGE.OPENAI_API_KEY,
+        ]);
+        const customServerUrl = storageData[STORAGE.CUSTOM_SERVER_URL];
+        const apiKey = storageData[STORAGE.OPENAI_API_KEY];
+
         const BASE_URL = !!customServerUrl ? customServerUrl : OPENAI_PROXY_BASE_URL;
-        const models = await fetch(`${BASE_URL}${ENDPOINTS.MODELS}`);
-        if (models.status === 200) {
-            return models.json();
-        } else {
-            statusElement.innerText = 'Could not fetch available models';
-            statusElement.style.display = 'block';
+
+        try {
+            const requestUrl = new URL(`${BASE_URL}${ENDPOINTS.MODELS}`);
+            if (apiKey) {
+                requestUrl.searchParams.append('open_ai_api_key', apiKey);
+            }
+
+            const models = await fetch(requestUrl);
+            if (models.status === 200) {
+                return models.json();
+            } else {
+                return [];
+            }
+        } catch (e) {
             return [];
         }
     }
@@ -195,40 +207,77 @@ document.addEventListener('DOMContentLoaded', async () => {
                 serverUrlInput.value = data[STORAGE.CUSTOM_SERVER_URL];
             } else {
                 statusElement.innerText = '';
-                statusElement.style.display = 'none';
             }
         },
     );
 
-    apiKeyInput.addEventListener('change', () => {
+    apiKeyInput.addEventListener('change', async () => {
+        statusElement.innerText = '';
         chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
+        const models = await getModels();
+        if (models.length > 0 && !!apiKeyInput.value) {
+            openaiModelSelect.disabled = false;
+        } else if (!apiKeyInput.value) {
+            openaiModelSelect.disabled = true;
+        } else if (models.length === 0) {
+            apiKeyInput.value = '';
+            chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
+            statusElement.innerText = 'Invalid API Key';
+            openaiModelSelect.disabled = true;
+        }
+        if (!!serverUrlInput.value && openaiModelSelect.disabled) {
+            const models = await getModels();
+            if (models.length > 0) {
+                openaiModelSelect.disabled = false;
+            }
+        }
+        if (openaiModelSelect.disabled) {
+            for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
+                    openaiModelSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
+        }
     });
 
-    serverUrlInput.addEventListener('change', () => {
+    serverUrlInput.addEventListener('change', async () => {
+        statusElement.innerText = '';
         const serverUrl = serverUrlInput.value.trim();
-
-        try {
-            const urlObject = new URL(serverUrl);
-
-            // Remove trailing slash if present
-            const modifiedUrl = urlObject.href.replace(/\/$/, '');
-            serverUrlInput.value = modifiedUrl;
+        const modifiedUrl = serverUrl.replace(/\/$/, '');
+        serverUrlInput.value = modifiedUrl;
+        chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
+        const models = await getModels();
+        if (models.length > 0 && !!serverUrlInput.value) {
+            openaiModelSelect.disabled = false;
+        } else if (!serverUrlInput.value) {
+            openaiModelSelect.disabled = true;
+        } else if (models.length === 0) {
+            serverUrlInput.value = '';
             chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
-            statusElement.innerText = '';
-            statusElement.style.display = 'none';
-        } catch (error) {
-            if (!serverUrl) {
-                statusElement.innerText = '';
-                statusElement.style.display = 'none';
-                chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: null });
-            } else {
-                statusElement.innerText = 'Invalid URL';
-                statusElement.style.display = 'block';
+            statusElement.innerText = 'Invalid Server';
+            openaiModelSelect.disabled = true;
+        }
+        if (!!apiKeyInput.value && openaiModelSelect.disabled) {
+            const models = await getModels();
+            if (models.length > 0) {
+                openaiModelSelect.disabled = false;
             }
+        }
+        if (openaiModelSelect.disabled) {
+            for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
+                    openaiModelSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
         }
     });
 
     openaiModelSelect.addEventListener('change', function () {
-        chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: this.text });
+        var selectedText = this.options[this.selectedIndex].text;
+        chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: selectedText });
     });
 });

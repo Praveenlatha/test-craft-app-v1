@@ -1,4 +1,5 @@
-const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-rtu664353a-uc.a.run.app'
+const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-rtu664353a-uc.a.run.app';
+// const OPENAI_PROXY_BASE_URL = 'http://127.0.0.1:8080';
 
 const STORAGE = {
     AUTOMATED_TESTS: 'automated-tests',
@@ -47,7 +48,7 @@ const MESSAGES = {
     GENERATING_TESTS: 'Generating Tests<span class="ellipsis">...</span>',
     SUCCESS: 'Success!',
     TOO_LARGE: 'The element selected is too large, please try again with a smaller element.',
-    INVALID_API_KEY: 'Incorrect API key provided'
+    INVALID_API_KEY: 'Incorrect API key provided',
 };
 
 const RESULT = {
@@ -61,7 +62,7 @@ const ENDPOINTS = {
     CHECK_ACCESSIBILITY: '/api/check-accessibility',
     GENERATE_TEST_IDEAS: '/api/generate-ideas',
     PING: '/api/ping',
-    MODELS: '/api/models'
+    MODELS: '/api/models',
 };
 
 const FEATURE = {
