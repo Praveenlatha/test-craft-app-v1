@@ -61,7 +61,7 @@ button {
     border: none;
     border-radius: 4px;
     font-weight: 700;
-    margin: 5% auto;
+    margin: 3% auto;
     width: 60%;
     text-align: center;
     cursor: pointer;
@@ -149,10 +149,6 @@ h3 {
 
 #framework button:hover {
     color: #FFFFFF;
-}
-
-#generate-tests {
-    margin-top: 4% !important;
 }
 
 #status,

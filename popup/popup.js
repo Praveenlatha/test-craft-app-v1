@@ -11,31 +11,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const currentTabUrl = tabs[0].url;
+        console.log(currentTabUrl);
 
-        chrome.storage.local.get(
-            [STORAGE.ELEMENT_PICKED, STORAGE.SITE_URL, STORAGE.ELEMENT_SCREENSHOT],
-            (data) => {
-                if (!data[STORAGE.SITE_URL] || data[STORAGE.SITE_URL] !== currentTabUrl) {
-                    chrome.storage.local.remove([STORAGE.ELEMENT_PICKED, STORAGE.ELEMENT_SOURCE]);
-                    chrome.storage.local.set({ [STORAGE.SITE_URL]: currentTabUrl });
-                }
+        chrome.storage.local.get([STORAGE.ELEMENT_PICKED, STORAGE.SITE_URL, STORAGE.ELEMENT_SCREENSHOT], (data) => {
+            if (!data[STORAGE.SITE_URL] || data[STORAGE.SITE_URL] !== currentTabUrl) {
+                console.log('Old URL:', data[STORAGE.SITE_URL]);
+                chrome.storage.local.remove(
+                    [STORAGE.ELEMENT_PICKED, STORAGE.ELEMENT_SOURCE, STORAGE.ELEMENT_SCREENSHOT],
+                    () => {
+                        chrome.storage.local.set({ [STORAGE.SITE_URL]: currentTabUrl }, () => {
+                            screenShotImage.src = './../images/screenshot-placeholder.jpg';
+                        });
+                        automateBtn.disabled = true;
+                        generateTestIdeasBtn.disabled = true;
+                        checkAccessibilityBtn.disabled = true;
+                    },
+                );
+            }
 
-                if (data[STORAGE.ELEMENT_PICKED]) {
-                    automateBtn.disabled = false;
-                    generateTestIdeasBtn.disabled = false;
-                    checkAccessibilityBtn.disabled = false;
-                } else {
-                    automateBtn.disabled = true;
-                    generateTestIdeasBtn.disabled = true;
-                    checkAccessibilityBtn.disabled = true;
-                }
+            if (data[STORAGE.ELEMENT_PICKED]) {
+                automateBtn.disabled = false;
+                generateTestIdeasBtn.disabled = false;
+                checkAccessibilityBtn.disabled = false;
+            } else {
+                automateBtn.disabled = true;
+                generateTestIdeasBtn.disabled = true;
+                checkAccessibilityBtn.disabled = true;
+            }
 
-                if (data[STORAGE.ELEMENT_SCREENSHOT]) {
-                    debugger;
-                    screenShotImage.src = data[STORAGE.ELEMENT_SCREENSHOT];
-                }
-            },
-        );
+            if (data[STORAGE.ELEMENT_SCREENSHOT]) {
+                debugger;
+                screenShotImage.src = data[STORAGE.ELEMENT_SCREENSHOT];
+            }
+        });
     });
 
     pickerBtn.addEventListener('click', async () => {

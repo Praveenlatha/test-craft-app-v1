@@ -1,5 +1,9 @@
-const OPENAI_PROXY_BASE_URL = 'https://openai-api-proxy-rtu664353a-uc.a.run.app';
-// const OPENAI_PROXY_BASE_URL = 'http://127.0.0.1:8080';
+const ENVIORNMENTS = {
+    PROD: 'https://api.testcraft.app',
+    DEV: 'https://dev-api.testcraft.app',
+    LOCAL: 'http://127.0.0.1:8080',
+};
+const OPENAI_PROXY_BASE_URL = ENVIORNMENTS.DEV;
 
 const STORAGE = {
     AUTOMATED_TESTS: 'automated-tests',
