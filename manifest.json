@@ -21,7 +21,6 @@
             ],
             "js": [
                 "scripts/content.js",
-                "deps/html2canvas/index.js"
             ],
             "css": [
                 "styles/styles.css"

@@ -46,15 +46,29 @@ function mouseOutHandler(e) {
     hoveredElement.classList.remove('element-picker-hovered');
 }
 
+function sendElementPosition(element) {
+    if (element) {
+        const rect = element.getBoundingClientRect();
+        chrome.runtime.sendMessage({
+            action: 'captureElement',
+            details: {
+                x: rect.left + window.scrollX, // Include scroll offset
+                y: rect.top + window.scrollY,
+                width: rect.width,
+                height: rect.height,
+            },
+        });
+    }
+}
+
 async function clickHandler(e) {
     e.stopPropagation();
     e.preventDefault();
     stopPicking();
     hoveredElement.classList.remove('element-picker-hovered');
     source = hoveredElement.outerHTML;
-    var canvas = await html2canvas(hoveredElement);
-    var screenShot = canvas.toDataURL();
-    await chrome.runtime.sendMessage({ action: 'element-picked', source, screenShot });
+    sendElementPosition(hoveredElement);
+    await chrome.runtime.sendMessage({ action: 'element-picked', source });
     showToast();
 }
 
