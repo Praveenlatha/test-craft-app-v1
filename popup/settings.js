@@ -107,6 +107,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function enableModelsDropdown(model) {
+        openaiModelSelect.disabled = false;
+        if (!!model) {
+            console.log('model selected: ', model);
+            for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                if (openaiModelSelect.options[i].text === model) {
+                    openaiModelSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        } else {
+            for (let i = 0; i < openaiModelSelect.options.length; i++) {
+                if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
+                    openaiModelSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+
     Object.values(FRAMEWORK).forEach(function (framework) {
         let button = document.createElement('button');
         button.classList.add('disabled');
@@ -170,25 +190,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             chrome.storage.local.set({ [STORAGE.LANGUAGE_SELECTED]: language });
             markOptionSelected(language, 'language');
 
-            if (!!data[STORAGE.OPENAI_API_KEY]) {
+            if (!!data[STORAGE.OPENAI_API_KEY] || !!data[STORAGE.CUSTOM_SERVER_URL]) {
                 apiKeyInput.value = data[STORAGE.OPENAI_API_KEY];
-                openaiModelSelect.disabled = false;
-                if (!!data[STORAGE.OPENAI_MODEL]) {
-                    for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                        if (openaiModelSelect.options[i].text === data[STORAGE.OPENAI_MODEL]) {
-                            openaiModelSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                } else {
-                    for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                        if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
-                            openaiModelSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                }
-            } else {
+                serverUrlInput.value = data[STORAGE.CUSTOM_SERVER_URL];
+                enableModelsDropdown(data[STORAGE.OPENAI_MODEL]);
+            }
+
+            if (!data[STORAGE.OPENAI_API_KEY] && !data[STORAGE.CUSTOM_SERVER_URL]) {
                 for (let i = 0; i < openaiModelSelect.options.length; i++) {
                     if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
                         openaiModelSelect.selectedIndex = i;
@@ -196,12 +204,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
                 openaiModelSelect.disabled = true;
-            }
-
-            if (data[STORAGE.CUSTOM_SERVER_URL]) {
-                serverUrlInput.value = data[STORAGE.CUSTOM_SERVER_URL];
-            } else {
-                statusElement.innerText = '';
             }
         },
     );
