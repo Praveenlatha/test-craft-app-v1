@@ -6,7 +6,6 @@ const ENVIORNMENTS = {
 const OPENAI_PROXY_BASE_URL = ENVIORNMENTS.DEV;
 
 const STORAGE = {
-    AUTOMATED_TESTS: 'automated-tests',
     CUSTOM_SERVER_URL: 'custom-server-url',
     ELEMENT_PICKED: 'element-picked',
     ELEMENT_SCREENSHOT: 'element-screenshot',

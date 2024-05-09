@@ -50,10 +50,7 @@ function cleanGeneratedCode(data, language) {
 }
 
 function convertMarkdownLinksToHtml(text) {
-    return text.replace(
-        /\[(.*?)\]\((.*?)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
-    );
+    return text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 }
 
 async function readStream(response, feature, language = '') {
@@ -119,24 +116,16 @@ async function readStream(response, feature, language = '') {
                                                     !content.includes('Scenarios:') &&
                                                     !content.includes('<br />\n<br />\n')
                                                 ) {
-                                                    content = content.replace(
-                                                        '<br />\n',
-                                                        `<br />\n${inputBox} `,
-                                                    );
+                                                    content = content.replace('<br />\n', `<br />\n${inputBox} `);
                                                 }
                                                 testIdeasTestsContainer.innerHTML += content;
                                                 break;
                                             case FEATURE.CHECK_ACCESSIBILITY:
                                                 content = content.replace(/\n/g, '<br />\n');
                                                 accessibilityCheckContainer.innerHTML += content;
-                                                let htmlContent =
-                                                    accessibilityCheckContainer.innerHTML;
-                                                let newContent =
-                                                    convertMarkdownLinksToHtml(htmlContent);
-                                                newContent = newContent.replace(
-                                                    '- Issues',
-                                                    '<h3>Issues</h3>',
-                                                );
+                                                let htmlContent = accessibilityCheckContainer.innerHTML;
+                                                let newContent = convertMarkdownLinksToHtml(htmlContent);
+                                                newContent = newContent.replace('- Issues', '<h3>Issues</h3>');
                                                 newContent = newContent.replace(
                                                     '- Conformance Level A -',
                                                     '<h4>Conformance Level A</h4>',
@@ -207,19 +196,14 @@ async function showResult(feature) {
         case FEATURE.GENERATE_TEST_IDEAS:
             URL += ENDPOINTS.GENERATE_TEST_IDEAS;
             payload = {
-                sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[
-                    STORAGE.ELEMENT_SOURCE
-                ],
+                sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[STORAGE.ELEMENT_SOURCE],
             };
             break;
         case FEATURE.CHECK_ACCESSIBILITY:
-            URL = ENDPOINTS.CHECK_ACCESSIBILITY;
+            URL += ENDPOINTS.CHECK_ACCESSIBILITY;
             payload = {
-                sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[
-                    STORAGE.ELEMENT_SOURCE
-                ],
+                sourceCode: (await chrome.storage.local.get([STORAGE.ELEMENT_SOURCE]))[STORAGE.ELEMENT_SOURCE],
             };
-            chrome.storage.local.remove([STORAGE.ELEMENT_PICKED]);
             break;
         case FEATURE.AUTOMATE_TESTS:
             URL += ENDPOINTS.AUTOMATE_TESTS;
@@ -238,7 +222,6 @@ async function showResult(feature) {
                 pom: data[STORAGE.POM],
             };
             language = payload.language;
-            chrome.storage.local.remove([STORAGE.ELEMENT_PICKED, STORAGE.AUTOMATED_TESTS]);
             break;
         case FEATURE.AUTOMATE_IDEAS:
             URL += ENDPOINTS.AUTOMATE_IDEAS;
@@ -271,6 +254,8 @@ async function showResult(feature) {
     }
 
     const options = await buildRequest(payload);
+
+    console.log('Sending request to:', URL);
 
     fetch(URL, options)
         .then((response) => {

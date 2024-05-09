@@ -47,9 +47,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.action === 'captureElement') {
         const { x, y, width, height } = request.details;
         chrome.tabs.captureVisibleTab(sender.tab.windowId, { format: 'png' }, function (dataUrl) {
-            console.log('Screenshot:', dataUrl);
             cropImage(dataUrl, x, y, width, height, (croppedDataUrl) => {
-                console.log('Cropped Screenshot:', croppedDataUrl);
                 chrome.storage.local.set({ ['element-screenshot']: croppedDataUrl });
             });
         });

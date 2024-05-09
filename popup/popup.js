@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const currentTabUrl = tabs[0].url;
         chrome.storage.local.get([STORAGE.ELEMENT_PICKED, STORAGE.SITE_URL, STORAGE.ELEMENT_SCREENSHOT], (data) => {
             if (!data[STORAGE.SITE_URL] || data[STORAGE.SITE_URL] !== currentTabUrl) {
-                console.log('Old URL:', data[STORAGE.SITE_URL]);
                 chrome.storage.local.remove(
                     [STORAGE.ELEMENT_PICKED, STORAGE.ELEMENT_SOURCE, STORAGE.ELEMENT_SCREENSHOT],
                     () => {

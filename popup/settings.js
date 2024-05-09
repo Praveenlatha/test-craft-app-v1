@@ -38,10 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function getModels() {
-        const storageData = await chrome.storage.local.get([
-            STORAGE.CUSTOM_SERVER_URL,
-            STORAGE.OPENAI_API_KEY,
-        ]);
+        const storageData = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL, STORAGE.OPENAI_API_KEY]);
         const customServerUrl = storageData[STORAGE.CUSTOM_SERVER_URL];
         const apiKey = storageData[STORAGE.OPENAI_API_KEY];
 
@@ -164,15 +161,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             STORAGE.OPENAI_MODEL,
         ],
         (data) => {
-            let framework = data[STORAGE.FRAMEWORK_SELECTED]
-                ? data[STORAGE.FRAMEWORK_SELECTED]
-                : FRAMEWORK.PLAYWRIGHT;
+            let framework = data[STORAGE.FRAMEWORK_SELECTED] ? data[STORAGE.FRAMEWORK_SELECTED] : FRAMEWORK.PLAYWRIGHT;
+            chrome.storage.local.set({ [STORAGE.FRAMEWORK_SELECTED]: framework });
             markOptionSelected(framework, 'framework');
             updateLanguageOptions(framework);
 
-            let language = data[STORAGE.LANGUAGE_SELECTED]
-                ? data[STORAGE.LANGUAGE_SELECTED]
-                : LANGUAGE.JAVASCRIPT.id;
+            let language = data[STORAGE.LANGUAGE_SELECTED] ? data[STORAGE.LANGUAGE_SELECTED] : LANGUAGE.JAVASCRIPT.id;
+            chrome.storage.local.set({ [STORAGE.LANGUAGE_SELECTED]: language });
             markOptionSelected(language, 'language');
 
             if (!!data[STORAGE.OPENAI_API_KEY]) {
