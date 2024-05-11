@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const openaiModelSelect = document.getElementById('openai-models');
     const statusElement = document.getElementById('optional-settings-status');
 
-    const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo-0125';
-
     function markOptionSelected(id, type) {
         let ids;
         if (type === 'language') {
@@ -38,6 +36,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function getModels() {
+        apiKeyInput.disabled = true;
+        serverUrlInput.disabled = true;
         const storageData = await chrome.storage.local.get([STORAGE.CUSTOM_SERVER_URL, STORAGE.OPENAI_API_KEY]);
         const customServerUrl = storageData[STORAGE.CUSTOM_SERVER_URL];
         const apiKey = storageData[STORAGE.OPENAI_API_KEY];
@@ -50,14 +50,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 requestUrl.searchParams.append('open_ai_api_key', apiKey);
             }
 
-            const models = await fetch(requestUrl);
-            if (models.status === 200) {
-                return models.json();
+            const response = await fetch(requestUrl);
+            if (response.status === 200) {
+                return response.json();
             } else {
-                return [];
+                return { models: [] };
             }
         } catch (e) {
-            return [];
+            return { models: [] };
+        } finally {
+            apiKeyInput.disabled = false;
+            serverUrlInput.disabled = false;
         }
     }
 
@@ -107,26 +110,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function enableModelsDropdown(model) {
-        openaiModelSelect.disabled = false;
-        if (!!model) {
-            console.log('model selected: ', model);
-            for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                if (openaiModelSelect.options[i].text === model) {
-                    openaiModelSelect.selectedIndex = i;
-                    break;
-                }
-            }
-        } else {
-            for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
-                    openaiModelSelect.selectedIndex = i;
-                    break;
-                }
-            }
-        }
-    }
-
     Object.values(FRAMEWORK).forEach(function (framework) {
         let button = document.createElement('button');
         button.classList.add('disabled');
@@ -154,9 +137,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    const models = await getModels();
-    models.forEach((model, key) => {
-        openaiModelSelect[key] = new Option(model.id, key);
+    const response = await getModels();
+    const DEFAULT_OPENAI_MODEL = response.default_model;
+    response.models.forEach((model, key) => {
+        openaiModelSelect[key] = new Option(model.label, model.id);
     });
 
     settingsButton.addEventListener('click', function () {
@@ -193,16 +177,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!!data[STORAGE.OPENAI_API_KEY] || !!data[STORAGE.CUSTOM_SERVER_URL]) {
                 apiKeyInput.value = data[STORAGE.OPENAI_API_KEY];
                 serverUrlInput.value = data[STORAGE.CUSTOM_SERVER_URL];
-                enableModelsDropdown(data[STORAGE.OPENAI_MODEL]);
+                openaiModelSelect.value = data[STORAGE.OPENAI_MODEL];
+                openaiModelSelect.disabled = false;
             }
 
             if (!data[STORAGE.OPENAI_API_KEY] && !data[STORAGE.CUSTOM_SERVER_URL]) {
-                for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                    if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
-                        openaiModelSelect.selectedIndex = i;
-                        break;
-                    }
-                }
+                openaiModelSelect.value = DEFAULT_OPENAI_MODEL;
                 openaiModelSelect.disabled = true;
             }
         },
@@ -210,31 +190,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     apiKeyInput.addEventListener('change', async () => {
         statusElement.innerText = '';
-        chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
-        const models = await getModels();
-        if (models.length > 0 && !!apiKeyInput.value) {
+        await chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
+        const response = await getModels();
+        if (response.models.length > 0 && !!apiKeyInput.value) {
             openaiModelSelect.disabled = false;
         } else if (!apiKeyInput.value) {
             openaiModelSelect.disabled = true;
-        } else if (models.length === 0) {
+        } else if (response.models.length === 0) {
             apiKeyInput.value = '';
-            chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
+            await chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
             statusElement.innerText = 'Invalid API Key';
             openaiModelSelect.disabled = true;
         }
         if (!!serverUrlInput.value && openaiModelSelect.disabled) {
-            const models = await getModels();
-            if (models.length > 0) {
+            const response = await getModels();
+            if (response.models.length > 0) {
                 openaiModelSelect.disabled = false;
             }
         }
         if (openaiModelSelect.disabled) {
-            for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
-                    openaiModelSelect.selectedIndex = i;
-                    break;
-                }
-            }
+            openaiModelSelect.value = DEFAULT_OPENAI_MODEL;
             chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
         }
     });
@@ -244,37 +219,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         const serverUrl = serverUrlInput.value.trim();
         const modifiedUrl = serverUrl.replace(/\/$/, '');
         serverUrlInput.value = modifiedUrl;
-        chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
-        const models = await getModels();
-        if (models.length > 0 && !!serverUrlInput.value) {
+        await chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
+        const response = await getModels();
+        if (response.models.length > 0 && !!serverUrlInput.value) {
             openaiModelSelect.disabled = false;
         } else if (!serverUrlInput.value) {
             openaiModelSelect.disabled = true;
-        } else if (models.length === 0) {
+        } else if (response.models.length === 0) {
             serverUrlInput.value = '';
-            chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
+            await chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
             statusElement.innerText = 'Invalid Server';
             openaiModelSelect.disabled = true;
         }
         if (!!apiKeyInput.value && openaiModelSelect.disabled) {
-            const models = await getModels();
-            if (models.length > 0) {
+            const response = await getModels();
+            if (response.models.length > 0) {
                 openaiModelSelect.disabled = false;
             }
         }
         if (openaiModelSelect.disabled) {
-            for (let i = 0; i < openaiModelSelect.options.length; i++) {
-                if (openaiModelSelect.options[i].text === DEFAULT_OPENAI_MODEL) {
-                    openaiModelSelect.selectedIndex = i;
-                    break;
-                }
-            }
-            chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
+            openaiModelSelect.value = DEFAULT_OPENAI_MODEL;
+            await chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
         }
     });
 
     openaiModelSelect.addEventListener('change', function () {
-        var selectedText = this.options[this.selectedIndex].text;
-        chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: selectedText });
+        var selectedValue = this.options[this.selectedIndex].value;
+        chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: selectedValue });
     });
 });
