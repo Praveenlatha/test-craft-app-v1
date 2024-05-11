@@ -249,6 +249,7 @@ async function showResult(feature) {
         payload['openAiApiKey'] = openAiApiKey;
     }
 
+    console.log('Model in use:', model);
     if (!!model) {
         payload['model'] = model;
     }

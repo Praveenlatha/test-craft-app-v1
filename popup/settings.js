@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (openaiModelSelect.disabled) {
             openaiModelSelect.value = DEFAULT_OPENAI_MODEL;
-            chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
+            await chrome.storage.local.set({ [STORAGE.OPENAI_MODEL]: DEFAULT_OPENAI_MODEL });
         }
     });
 
