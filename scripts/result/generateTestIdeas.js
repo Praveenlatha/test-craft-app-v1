@@ -45,6 +45,53 @@ function finishIdeas() {
             createTestsButton.disabled = !hasIdeasChecked;
         }
     });
+
+    const editButtons = document.querySelectorAll('button.edit-btn');
+    editButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            const btn = event.currentTarget;
+            const label = btn.parentNode;
+
+            const span = label.querySelector('span.test-idea-text');
+            const input = label.querySelector('span.test-idea-text input');
+
+            if (input.type === 'checkbox') {
+                btn.disabled = true;
+                var textNode = [...span.childNodes].filter((node) => {
+                    return node.nodeType == Node.TEXT_NODE;
+                })[0];
+
+                if (textNode) {
+                    const ideaText = textNode.textContent;
+                    span.removeChild(textNode);
+
+                    input.type = 'text';
+                    input.value = ideaText;
+
+                    input.classList.add('editing-idea');
+
+                    input.addEventListener('blur', () => {
+                        const newText = input.value;
+                        input.value = '';
+                        input.type = 'checkbox';
+                        const textNode = document.createTextNode(newText);
+                        const br = span.querySelector('br');
+                        span.insertBefore(textNode, br);
+                        input.classList.remove('editing-idea');
+                        btn.disabled = false;
+                    });
+
+                    input.addEventListener('keydown', (event) => {
+                        if (event.key === 'Enter' || event.key === 'Escape') {
+                            input.blur();
+                        }
+                    });
+
+                    input.focus();
+                }
+            }
+        });
+    });
 }
 
 function getCheckedIdeas() {
@@ -55,4 +102,21 @@ function getCheckedIdeas() {
         }
     }
     return checkedIdeas;
+}
+
+function convertToTextbox(label) {
+    const textbox = document.createElement('input');
+    textbox.type = 'text';
+    textbox.value = currentText;
+    textbox.className = 'text-edit';
+    label.insertBefore(textbox, label.childNodes[2]); // Insert before the Edit button
+
+    // Event to handle focus loss on textbox, which reverts it back to text
+    textbox.addEventListener('blur', function () {
+        label.removeChild(textbox);
+        const textNode = document.createTextNode(this.value);
+        label.insertBefore(textNode, label.childNodes[2]); // Insert new text node before the Edit button
+    });
+
+    textbox.focus(); // Automatically focus the textbox
 }
