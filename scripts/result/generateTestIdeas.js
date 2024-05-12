@@ -103,20 +103,3 @@ function getCheckedIdeas() {
     }
     return checkedIdeas;
 }
-
-function convertToTextbox(label) {
-    const textbox = document.createElement('input');
-    textbox.type = 'text';
-    textbox.value = currentText;
-    textbox.className = 'text-edit';
-    label.insertBefore(textbox, label.childNodes[2]); // Insert before the Edit button
-
-    // Event to handle focus loss on textbox, which reverts it back to text
-    textbox.addEventListener('blur', function () {
-        label.removeChild(textbox);
-        const textNode = document.createTextNode(this.value);
-        label.insertBefore(textNode, label.childNodes[2]); // Insert new text node before the Edit button
-    });
-
-    textbox.focus(); // Automatically focus the textbox
-}

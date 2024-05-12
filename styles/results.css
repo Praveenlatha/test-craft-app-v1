@@ -92,7 +92,7 @@ span.test-idea-text {
     border: 1px solid #1c2430;
 }
 
-span.test-idea-text:hover {
+label.test-idea:hover {
     cursor:pointer;
     border: 1px solid #018b7d;
 }
@@ -172,6 +172,7 @@ button.edit-btn {
 
 .material-icons:before {
     content: "edit";
+    font-size: 22px;
 }
 
 .editing-idea {
