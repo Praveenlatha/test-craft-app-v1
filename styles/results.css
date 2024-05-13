@@ -92,6 +92,10 @@ span.test-idea-text {
     border: 1px solid #1c2430;
 }
 
+label.test-idea {
+    border: 1px solid #1c2430;
+}
+
 label.test-idea:hover {
     cursor:pointer;
     border: 1px solid #018b7d;
