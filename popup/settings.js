@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const response = await getModels();
     const DEFAULT_OPENAI_MODEL = response.default_model;
+    const MODEL_SELECTION_ENABLED = response.model_selection_enabled;
     response.models.forEach((model, key) => {
         openaiModelSelect[key] = new Option(model.label, model.id);
     });
@@ -174,6 +175,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             chrome.storage.local.set({ [STORAGE.LANGUAGE_SELECTED]: language });
             markOptionSelected(language, 'language');
 
+            if (!!data[STORAGE.OPENAI_MODEL]) {
+                openaiModelSelect.value = data[STORAGE.OPENAI_MODEL];
+            } else {
+                openaiModelSelect.value = DEFAULT_OPENAI_MODEL;
+            }
+
             if (!!data[STORAGE.OPENAI_API_KEY] || !!data[STORAGE.CUSTOM_SERVER_URL]) {
                 apiKeyInput.value = data[STORAGE.OPENAI_API_KEY];
                 serverUrlInput.value = data[STORAGE.CUSTOM_SERVER_URL];
@@ -181,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 openaiModelSelect.disabled = false;
             }
 
-            if (!data[STORAGE.OPENAI_API_KEY] && !data[STORAGE.CUSTOM_SERVER_URL]) {
+            if (!data[STORAGE.OPENAI_API_KEY] && !data[STORAGE.CUSTOM_SERVER_URL] && !MODEL_SELECTION_ENABLED) {
                 openaiModelSelect.value = DEFAULT_OPENAI_MODEL;
                 openaiModelSelect.disabled = true;
             }
@@ -195,12 +202,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (response.models.length > 0 && !!apiKeyInput.value) {
             openaiModelSelect.disabled = false;
         } else if (!apiKeyInput.value) {
-            openaiModelSelect.disabled = true;
+            if (!MODEL_SELECTION_ENABLED) {
+                openaiModelSelect.disabled = true;
+            }
         } else if (response.models.length === 0) {
             apiKeyInput.value = '';
             await chrome.storage.local.set({ [STORAGE.OPENAI_API_KEY]: apiKeyInput.value });
             statusElement.innerText = 'Invalid API Key';
-            openaiModelSelect.disabled = true;
+            if (!MODEL_SELECTION_ENABLED) {
+                openaiModelSelect.disabled = true;
+            }
         }
         if (!!serverUrlInput.value && openaiModelSelect.disabled) {
             const response = await getModels();
@@ -224,12 +235,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (response.models.length > 0 && !!serverUrlInput.value) {
             openaiModelSelect.disabled = false;
         } else if (!serverUrlInput.value) {
-            openaiModelSelect.disabled = true;
+            if (!MODEL_SELECTION_ENABLED) {
+                openaiModelSelect.disabled = true;
+            }
         } else if (response.models.length === 0) {
             serverUrlInput.value = '';
             await chrome.storage.local.set({ [STORAGE.CUSTOM_SERVER_URL]: serverUrlInput.value });
             statusElement.innerText = 'Invalid Server';
-            openaiModelSelect.disabled = true;
+            if (!MODEL_SELECTION_ENABLED) {
+                openaiModelSelect.disabled = true;
+            }
         }
         if (!!apiKeyInput.value && openaiModelSelect.disabled) {
             const response = await getModels();
