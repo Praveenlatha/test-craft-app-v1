@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function finishIdeas() {
-    ideas = document.querySelectorAll('label input');
     testIdeasTestsContainer.addEventListener('click', (event) => {
         if (event.target.matches('label input')) {
+            ideas = document.querySelectorAll('label input');
             let hasIdeasChecked = false;
             for (const idea of ideas) {
                 if (idea.checked) {
