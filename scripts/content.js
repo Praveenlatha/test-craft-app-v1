@@ -9,7 +9,7 @@ toast.className = 'toast';
 toast.textContent = 'Element picked!';
 document.body.appendChild(toast);
 
-function showToast(type = "success") {
+function showToast(type = 'success') {
     toast.classList.add('show', type);
     setTimeout(() => {
         toast.classList.remove('show', type);
@@ -46,12 +46,28 @@ function mouseOutHandler(e) {
     hoveredElement.classList.remove('element-picker-hovered');
 }
 
+function sendElementPosition(element) {
+    if (element) {
+        const rect = element.getBoundingClientRect();
+        chrome.runtime.sendMessage({
+            action: 'captureElement',
+            details: {
+                x: rect.left + window.scrollX, // Include scroll offset
+                y: rect.top + window.scrollY,
+                width: rect.width,
+                height: rect.height,
+            },
+        });
+    }
+}
+
 async function clickHandler(e) {
     e.stopPropagation();
     e.preventDefault();
     stopPicking();
     hoveredElement.classList.remove('element-picker-hovered');
     source = hoveredElement.outerHTML;
+    sendElementPosition(hoveredElement);
     await chrome.runtime.sendMessage({ action: 'element-picked', source });
     showToast();
 }
