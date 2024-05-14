@@ -63,31 +63,50 @@ function finishIdeas() {
 
                 if (textNode) {
                     const ideaText = textNode.textContent;
-                    span.removeChild(textNode);
+                    label.removeChild(span);
 
-                    input.type = 'text';
-                    input.value = ideaText;
+                    const newSpan = document.createElement('span');
+                    newSpan.classList.add('test-idea-text');
 
-                    input.classList.add('editing-idea');
+                    const inputText = document.createElement('input');
+                    inputText.type = 'text';
+                    inputText.value = ideaText;
+                    inputText.classList.add('editing-idea');
 
-                    input.addEventListener('blur', () => {
-                        const newText = input.value;
-                        input.value = '';
-                        input.type = 'checkbox';
+                    newSpan.appendChild(inputText);
+                    label.insertBefore(newSpan, label.querySelector('button.edit-btn'));
+
+                    inputText.addEventListener('blur', () => {
+                        const newText = inputText.value;
+                        label.removeChild(label.querySelector('span'));
+
+                        const newSpan = document.createElement('span');
+                        newSpan.classList.add('test-idea-text');
+
+                        const checkBox = document.createElement('input');
+                        checkBox.type = 'checkbox';
+                        checkBox.setAttribute('name', 'idea');
+
                         const textNode = document.createTextNode(newText);
-                        const br = span.querySelector('br');
-                        span.insertBefore(textNode, br);
+
+                        newSpan.appendChild(checkBox);
+                        newSpan.appendChild(textNode);
+
+                        label.insertBefore(newSpan, label.querySelector('button.edit-btn'));
                         input.classList.remove('editing-idea');
-                        btn.disabled = false;
+
+                        setTimeout(function() {
+                            btn.disabled = false;
+                        }, 300);
                     });
 
-                    input.addEventListener('keydown', (event) => {
+                    inputText.addEventListener('keydown', (event) => {
                         if (event.key === 'Enter' || event.key === 'Escape') {
-                            input.blur();
+                            inputText.blur();
                         }
                     });
 
-                    input.focus();
+                    inputText.focus();
                 }
             }
         });
