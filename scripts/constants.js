@@ -1,9 +1,4 @@
-const ENVIORNMENTS = {
-    PROD: 'https://api.testcraft.app',
-    DEV: 'https://dev-api.testcraft.app',
-    LOCAL: 'http://127.0.0.1:8080',
-};
-const OPENAI_PROXY_BASE_URL = ENVIORNMENTS.DEV;
+const OPENAI_PROXY_BASE_URL = 'https://api.testcraft.app';
 
 const STORAGE = {
     CUSTOM_SERVER_URL: 'custom-server-url',
